@@ -26,7 +26,7 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture(0)
     print('Press Esc to leave.')
 
-    # Load image
+    # Load image.
     _, frame = cap.read()
     q = Queue()
     p = Process(target=encord, args=(frame, q))

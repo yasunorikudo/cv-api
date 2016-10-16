@@ -85,8 +85,8 @@ class Detector(object):
             xmax = int(round(top_xmax[i] * image.shape[1]))
             ymax = int(round(top_ymax[i] * image.shape[0]))
             info['bbox'] = [xmin, ymin, xmax, ymax]
-            info['label'] = top_labels[i]
             # info['score'] = top_conf[i]
+            info['label'] = top_labels[i]
             objs.append(info)
 
         return objs
