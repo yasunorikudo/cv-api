@@ -11,14 +11,12 @@ from StringIO import StringIO
 
 
 def encord(frame, q):
-    img = cv2.resize(frame, (frame.shape[1] // 2, frame.shape[0] // 2))
-    img = img[:, ::-1].copy()
-
+    img = frame[::2, ::-2].copy()
+    # img = img[:, ::-1] # uncomment if you want flip the image
     s = StringIO()
-    io.imsave(s, img, plugin='pil')
+    io.imsave(s, img[:, :, [2, 1, 0]], plugin='pil')
     s.seek(0)
     files = {'file': s,}
-
     q.put([img, files])
 
 
@@ -26,7 +24,6 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture(0)
     print('Press Esc to leave.')
 
-    # Load image.
     _, frame = cap.read()
     q = Queue()
     p = Process(target=encord, args=(frame, q))
@@ -35,7 +32,8 @@ if __name__ == '__main__':
     while True:
         # Get raw and encorded image.
         img, files = q.get()
-        img = cv2.resize(img, (img.shape[1] * 2, img.shape[0] * 2))
+        h, w = img.shape[:2]
+        img = cv2.resize(img, (w * 2, h * 2))
 
         # Encord cap image with another process.
         _, frame = cap.read()
@@ -61,6 +59,7 @@ if __name__ == '__main__':
             cv2.putText(img, label, (x1, y2 - b / 2),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 1)
 
+        cv2.namedWindow('Detection', cv2.WINDOW_KEEPRATIO)
         cv2.imshow('Detection', img)
 
         key = cv2.waitKey(1)
